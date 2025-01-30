@@ -1,7 +1,7 @@
 import Game.Game;
-import Game.StateActionTuple;
 import Learning.Action;
 import Learning.QLearning;
+import Learning.State;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,56 +19,39 @@ public class Main {
 			logger.info("Start game: {}", i);
 			Game game = new Game();
 
+			State oldAttackerState = new State(game.getAttackerState());
+			State oldDefenderState = new State(game.getDefenderState());
 
 			int iteration = 0;
 			while (!game.isGameOver()) {
 				iteration++;
 				logger.trace("Round: {}", iteration);
-				Action attackerAction = gameAI.pickAction(game.getAttackerState());
-				Action defenderAction = gameAI.pickAction(game.getDefenderState());
+
+				Action attackerAction = gameAI.pickAction(oldAttackerState);
+				Action defenderAction = gameAI.pickAction(oldDefenderState);
+
 				game.moveAttacker(attackerAction);
 				game.moveDefender(defenderAction);
 
-				double rewardForAttacker, rewardForDefender;
+				State newAttackerState = game.getAttackerState();
+				State newDefenderState = game.getDefenderState();
 
-				if (game.isVictoryForAttacker()) {
-					rewardForAttacker = 10;
-					rewardForDefender = -10;
-					logger.info("Victory for attacker.");
-				} else {
-					rewardForAttacker = -10;
-					rewardForDefender = 10;
-					logger.info("Victory for defender");
-				}
+				double rewardForAttacker = game.getRewardForAttacker();
+				double rewardForDefender = game.getRewardForDefender();
 
-				if (game.isAttackerOutOfBounds() || game.isDefenderOutOfBounds()) {
-					logger.info("Victory by falling out of bounds");
-				}
+				gameAI.learn(oldAttackerState, newAttackerState, attackerAction, rewardForAttacker);
+				gameAI.learn(oldDefenderState, newDefenderState, defenderAction, rewardForDefender);
 
-				logger.info(rewardForAttacker);
-				logger.info(rewardForDefender);
-
-				while (!game.getAttackerHistory().isEmpty()) {
-					StateActionTuple stateActionTuple = game.getAttackerHistory().getLast();
-					game.getAttackerHistory().removeLast();
-					gameAI.learn(stateActionTuple.getState(), stateActionTuple.getAction(), rewardForAttacker);
-					rewardForAttacker = 0.9 * rewardForAttacker;
-				}
-
-				while (!game.getDefenderHistory().isEmpty()) {
-					StateActionTuple stateActionTuple = game.getDefenderHistory().getLast();
-					game.getDefenderHistory().removeLast();
-					gameAI.learn(stateActionTuple.getState(), stateActionTuple.getAction(), rewardForDefender);
-					rewardForDefender = 0.9 * rewardForDefender;
-				}
+				oldAttackerState = new State(game.getAttackerState());
+				oldDefenderState = new State(game.getDefenderState());
 			}
-
-			try {
-				gameAI.writeMatrix();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-
 		}
+
+		try {
+			gameAI.writeMatrix();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 }
