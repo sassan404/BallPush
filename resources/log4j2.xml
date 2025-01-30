@@ -1,12 +1,33 @@
 <Configuration status="WARN">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
+            <PatternLayout pattern="%highlight{%-5level} %logger{36} - %msg%n"/>
         </Console>
+        <RollingFile name="rolling" fileName="logs/app.log"
+                     filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
-        <Root level="info">
-            <AppenderRef ref="Console"/>
-        </Root>
+        <logger name="Learning" level="trace" additivity="false">
+            <AppenderRef ref="Console" level="warn"/>
+            <AppenderRef ref="rolling"/>
+        </logger>
+        <logger name="Game" level="trace" additivity="false">
+            <AppenderRef ref="Console" level="warn"/>
+            <AppenderRef ref="rolling"/>
+        </logger>
+        <logger name="Movement" level="trace" additivity="false">
+            <AppenderRef ref="Console" level="info"/>
+            <AppenderRef ref="rolling"/>
+        </logger>
+        <logger name="Main" level="trace" additivity="false">
+            <AppenderRef ref="Console" level="info"/>
+            <AppenderRef ref="rolling"/>
+        </logger>
     </Loggers>
 </Configuration>

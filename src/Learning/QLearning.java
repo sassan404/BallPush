@@ -1,11 +1,15 @@
 package Learning;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.*;
 import java.util.*;
 import java.util.stream.Stream;
 
 public class QLearning {
 
+	private static final Logger logger = LogManager.getLogger(QLearning.class);
 	HashMap<State, HashMap<Action, Double>> matrix = new HashMap<>();
 	double explorationCoefficient = 0;
 	Random rand = new Random();
@@ -18,7 +22,7 @@ public class QLearning {
 				try {
 					readMatrix();
 				} catch (IOException e) {
-					System.out.println("No old file, starting from a new file");
+					logger.warn("No old file, starting from a new file");
 				}
 			}
 		}
@@ -40,10 +44,6 @@ public class QLearning {
 		HashMap<Action, Double> actionMap = matrix.get(state);
 		// Update or set the value for the action
 		actionMap.put(action, actionMap.getOrDefault(action, 0.0) + reward);
-	}
-
-	public void rewardAndLearn(Map<State, Action> pastActions, boolean victory) {
-// todo
 	}
 
 	public Optional<Action> getBestKnownAction(State state) {
@@ -100,6 +100,4 @@ public class QLearning {
 			});
 		}
 	}
-
-
 }

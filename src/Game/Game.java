@@ -43,6 +43,7 @@ public class Game {
 		this.plane = new Vector(20, 20);
 		this.defender = new Ball(0, this.plane.getY() / 4);
 		this.attacker = new Ball(0, -this.plane.getY() / 4);
+		logger.info("Game created");
 	}
 
 	public Ball getDefender() {
@@ -76,15 +77,30 @@ public class Game {
 				attacker.getPosition().getY() < -plane.getY() / 2;
 	}
 
+	public boolean isOutOfBounds() {
+		return isDefenderOutOfBounds() || isAttackerOutOfBounds();
+	}
+
 	public boolean isVictoryForDefender() {
-		return defender.getPosition() == attacker.getPosition() || isAttackerOutOfBounds();
+		return (defender.getPosition() == attacker.getPosition()) || isAttackerOutOfBounds();
 	}
 
 	public boolean isVictoryForAttacker() {
-		return attacker.getPosition().getY() > plane.getY() / 2 || isDefenderOutOfBounds();
+		return (attacker.getPosition().getY() > plane.getY() / 2) || isDefenderOutOfBounds();
 	}
 
 	public boolean isGameOver() {
+		if (isVictoryForAttacker()) {
+			logVictory("attacker");
+		}
+		if (isVictoryForDefender()) {
+			logVictory("defender");
+		}
+		if (isOutOfBounds()) {
+			logger.warn("Victory by falling out of bounds");
+		} else if (isVictoryForAttacker() || isVictoryForAttacker()) {
+			logger.warn("Victory by objective");
+		}
 		return isVictoryForAttacker() || isVictoryForDefender();
 	}
 
@@ -101,7 +117,7 @@ public class Game {
 		}
 		ball.move(force);
 	}
-	
+
 	public State getAttackerState() {
 		return new State(Type.ATTACKER, attacker.getPosition(), defender.getPosition(), attacker.getSpeed(), defender.getSpeed());
 	}
@@ -112,18 +128,23 @@ public class Game {
 	}
 
 	public void moveAttacker(Action direction) {
-		logger.info("Attacker");
+		logger.info("Attacker moving.");
 		State currentState = getAttackerState();
 		attackerHistory.add(new StateActionTuple(currentState, direction));
 		moveBall(attacker, direction);
-
+		logger.info("Attacker new position: {}", attacker.getPosition().toBeautfiulString());
 	}
 
 	public void moveDefender(Action direction) {
-		logger.info("Defender");
+		logger.info("Defender moving.");
 		State currentState = getDefenderState();
 		defenderHistory.add(new StateActionTuple(currentState, direction));
 		moveBall(defender, direction);
+		logger.info("Defender new position: {}", defender.getPosition().toBeautfiulString());
 	}
 
+
+	private void logVictory(String player) {
+		logger.info("Victory for {}", player);
+	}
 }
