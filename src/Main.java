@@ -18,62 +18,57 @@ public class Main {
 		for (int i = 0; i < 1; i++) {
 			logger.info("Start game: {}", i);
 			Game game = new Game();
-			game.getAttacker().print();
-			game.getDefender().print();
 
 
 			int iteration = 0;
 			while (!game.isGameOver()) {
 				iteration++;
-				logger.info("Iteration: {}", iteration);
+				logger.trace("Round: {}", iteration);
 				Action attackerAction = gameAI.pickAction(game.getAttackerState());
 				Action defenderAction = gameAI.pickAction(game.getDefenderState());
 				game.moveAttacker(attackerAction);
-				game.getAttacker().print();
 				game.moveDefender(defenderAction);
-				game.getDefender().print();
+
+				double rewardForAttacker, rewardForDefender;
+
+				if (game.isVictoryForAttacker()) {
+					rewardForAttacker = 10;
+					rewardForDefender = -10;
+					logger.info("Victory for attacker.");
+				} else {
+					rewardForAttacker = -10;
+					rewardForDefender = 10;
+					logger.info("Victory for defender");
+				}
+
+				if (game.isAttackerOutOfBounds() || game.isDefenderOutOfBounds()) {
+					logger.info("Victory by falling out of bounds");
+				}
+
+				logger.info(rewardForAttacker);
+				logger.info(rewardForDefender);
+
+				while (!game.getAttackerHistory().isEmpty()) {
+					StateActionTuple stateActionTuple = game.getAttackerHistory().getLast();
+					game.getAttackerHistory().removeLast();
+					gameAI.learn(stateActionTuple.getState(), stateActionTuple.getAction(), rewardForAttacker);
+					rewardForAttacker = 0.9 * rewardForAttacker;
+				}
+
+				while (!game.getDefenderHistory().isEmpty()) {
+					StateActionTuple stateActionTuple = game.getDefenderHistory().getLast();
+					game.getDefenderHistory().removeLast();
+					gameAI.learn(stateActionTuple.getState(), stateActionTuple.getAction(), rewardForDefender);
+					rewardForDefender = 0.9 * rewardForDefender;
+				}
 			}
 
-			double rewardForAttacker, rewardForDefender;
-
-			if (game.isVictoryForAttacker()) {
-				rewardForAttacker = 10;
-				rewardForDefender = -10;
-				logger.info("Victory for attacker.");
-			} else {
-				rewardForAttacker = -10;
-				rewardForDefender = 10;
-				logger.info("Victory for defender");
-			}
-
-			if (game.isAttackerOutOfBounds() || game.isDefenderOutOfBounds()) {
-				logger.info("Victory by falling out of bounds");
-			}
-
-			logger.info(rewardForAttacker);
-			logger.info(rewardForDefender);
-
-			while (!game.getAttackerHistory().isEmpty()) {
-				StateActionTuple stateActionTuple = game.getAttackerHistory().getLast();
-				game.getAttackerHistory().removeLast();
-				gameAI.learn(stateActionTuple.getState(), stateActionTuple.getAction(), rewardForAttacker);
-				rewardForAttacker = 0.9 * rewardForAttacker;
-			}
-
-			while (!game.getDefenderHistory().isEmpty()) {
-				StateActionTuple stateActionTuple = game.getDefenderHistory().getLast();
-				game.getDefenderHistory().removeLast();
-				gameAI.learn(stateActionTuple.getState(), stateActionTuple.getAction(), rewardForDefender);
-				rewardForDefender = 0.9 * rewardForDefender;
+			try {
+				gameAI.writeMatrix();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 
 		}
-
-		try {
-			gameAI.writeMatrix();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
 	}
 }

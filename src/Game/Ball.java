@@ -26,6 +26,7 @@ public class Ball {
 		this.position = new Position(x, y);
 		this.speed = new Speed();
 		this.acceleration = new Acceleration();
+		logger.info("Ball created: {}", this.toString());
 	}
 
 	public Ball(double x, double y, double speedX, double speedY, double accX, double accY) {
@@ -47,14 +48,13 @@ public class Ball {
 		this.speed.update(this.acceleration);
 	}
 
-	public void print() {
-		System.out.print("Position: ");
-		this.position.print();
-		System.out.print(", Speed: ");
-		this.speed.print();
-		System.out.print(", Acceleration: ");
-		this.acceleration.print();
-		System.out.println();
+	public String toString() {
+		return "Position: " +
+				this.position.toBeautfiulString() +
+				", Speed: " +
+				this.speed.toBeautfiulString() +
+				", Acceleration: " +
+				this.acceleration.toBeautfiulString();
 	}
 
 	public Position getPosition() {

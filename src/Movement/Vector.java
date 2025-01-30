@@ -1,8 +1,16 @@
 package Movement;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Objects;
 
 public class Vector {
+
+
+	private static final Logger logger = LogManager.getLogger(Vector.class);
+
+
 	private double x;
 	private double y;
 
@@ -37,8 +45,12 @@ public class Vector {
 		this.y = y;
 	}
 
-	public void print() {
-		System.out.print("X: " + this.x + "; Y: " + this.y);
+	public String toString() {
+		return this.getX() + "," + this.getY();
+	}
+
+	public String toBeautfiulString() {
+		return "X: " + this.getX() + "; Y: " + this.getY();
 	}
 
 	@Override
