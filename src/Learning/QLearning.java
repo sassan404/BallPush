@@ -11,8 +11,7 @@ public class QLearning {
 	Random rand = new Random();
 	private String CSV_FILE_NAME = "matrix-iteration.csv";
 
-	public QLearning(boolean incremental, String fileName) {
-		CSV_FILE_NAME = fileName;
+	public QLearning(boolean incremental) {
 		if (incremental) {
 			File file = new File(CSV_FILE_NAME);
 			if (file.exists()) {
@@ -30,15 +29,6 @@ public class QLearning {
 	}
 
 	public QLearning() {
-	}
-
-	public void initialise() throws IOException {
-		File file = new File(CSV_FILE_NAME);
-		if (file.exists()) {
-			readMatrix();
-		} else {
-
-		}
 	}
 
 	public void learn(State state, Action action, double reward) {

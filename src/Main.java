@@ -7,22 +7,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
 	private static final Logger logger = LogManager.getLogger(Main.class);
 
 	public static void main(String[] args) {
 
-		//TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-		// to see how IntelliJ IDEA suggests fixing it.
-
-		logger.info("This is an info message.");
-		logger.error("This is an error message.");
-
-		QLearning attackerAI = new QLearning(true, "attacker.csv");
-		QLearning defenderAI = new QLearning(true, "defender.csv");
+		QLearning gameAI = new QLearning(true);
 
 		for (int i = 0; i < 1; i++) {
 			logger.info("Start game: {}", i);
@@ -32,11 +23,11 @@ public class Main {
 
 
 			int iteration = 0;
-			while (!game.isVictoryForAttacker() && !game.isVictoryForDefender()) {
+			while (!game.isGameOver()) {
 				iteration++;
 				logger.info("Iteration: {}", iteration);
-				Action attackerAction = attackerAI.pickAction(game.getAttackerState());
-				Action defenderAction = defenderAI.pickAction(game.getDefenderState());
+				Action attackerAction = gameAI.pickAction(game.getAttackerState());
+				Action defenderAction = gameAI.pickAction(game.getDefenderState());
 				game.moveAttacker(attackerAction);
 				game.getAttacker().print();
 				game.moveDefender(defenderAction);
@@ -65,22 +56,21 @@ public class Main {
 			while (!game.getAttackerHistory().isEmpty()) {
 				StateActionTuple stateActionTuple = game.getAttackerHistory().getLast();
 				game.getAttackerHistory().removeLast();
-				attackerAI.learn(stateActionTuple.getState(), stateActionTuple.getAction(), rewardForAttacker);
+				gameAI.learn(stateActionTuple.getState(), stateActionTuple.getAction(), rewardForAttacker);
 				rewardForAttacker = 0.9 * rewardForAttacker;
 			}
 
 			while (!game.getDefenderHistory().isEmpty()) {
 				StateActionTuple stateActionTuple = game.getDefenderHistory().getLast();
 				game.getDefenderHistory().removeLast();
-				defenderAI.learn(stateActionTuple.getState(), stateActionTuple.getAction(), rewardForDefender);
+				gameAI.learn(stateActionTuple.getState(), stateActionTuple.getAction(), rewardForDefender);
 				rewardForDefender = 0.9 * rewardForDefender;
 			}
 
 		}
 
 		try {
-			attackerAI.writeMatrix();
-			defenderAI.writeMatrix();
+			gameAI.writeMatrix();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

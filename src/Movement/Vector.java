@@ -1,21 +1,28 @@
 package Movement;
 
+import java.util.Objects;
+
 public class Vector {
 	private double x;
 	private double y;
 
 	public Vector() {
-		this.x = 0;
-		this.y = 0;
+		this.setX(0);
+		this.setY(0);
+	}
+
+	public Vector(Vector vector) {
+		this.setX(vector.getX());
+		this.setY(vector.getY());
 	}
 
 	public Vector(double x, double y) {
-		this.x = x;
-		this.y = y;
+		this.setX(x);
+		this.setY(y);
 	}
 
 	public double getX() {
-		return x;
+		return this.x;
 	}
 
 	public void setX(double x) {
@@ -23,7 +30,7 @@ public class Vector {
 	}
 
 	public double getY() {
-		return y;
+		return this.y;
 	}
 
 	public void setY(double y) {
@@ -34,7 +41,26 @@ public class Vector {
 		System.out.print("X: " + this.x + "; Y: " + this.y);
 	}
 
-	public String toString() {
-		return x + "," + y;
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.getX(), this.getY());
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (this.getClass() != obj.getClass()) {
+			return false;
+		}
+		Vector other = (Vector) obj;
+		if (Double.doubleToLongBits(this.getX()) != Double.doubleToLongBits(other.getX())) {
+			return false;
+		}
+		return Double.doubleToLongBits(this.getY()) == Double.doubleToLongBits(other.getY());
 	}
 }
