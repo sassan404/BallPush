@@ -11,12 +11,6 @@ public class Acceleration extends Vector {
 		super(x, y);
 	}
 
-	@Override
-	public void print() {
-		System.out.print("Acceleration: ");
-		super.print();
-	}
-
 	public void update(Vector friction, Vector force) {
 		this.updateX(friction.getX(), force.getX());
 		this.updateY(friction.getY(), force.getY());

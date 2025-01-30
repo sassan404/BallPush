@@ -6,16 +6,13 @@ public class Position extends Vector {
 		super();
 	}
 
+	public Position(Position other) {
+		super(other);
+	}
+
 	public Position(double x, double y) {
 		super(x, y);
 	}
-
-	@Override
-	public void print() {
-		System.out.print("Position: ");
-		super.print();
-	}
-
 
 	public void update(Acceleration acc, Speed speed) {
 		this.updateX(acc.getX(), speed.getX());

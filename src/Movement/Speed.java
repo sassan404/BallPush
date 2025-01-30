@@ -6,15 +6,12 @@ public class Speed extends Vector {
 		super();
 	}
 
-	public Speed(double x, double y) {
-		super(x, y);
+	public Speed(Speed other) {
+		super(other);
 	}
 
-
-	@Override
-	public void print() {
-		System.out.print("Speed: ");
-		super.print();
+	public Speed(double x, double y) {
+		super(x, y);
 	}
 
 	public void update(Acceleration acc) {
@@ -25,7 +22,6 @@ public class Speed extends Vector {
 	public void updateX(double accX) {
 		this.setX(accX + this.getX());
 	}
-
 
 	public void updateY(double accY) {
 		this.setY(accY + this.getY());

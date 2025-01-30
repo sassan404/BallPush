@@ -22,7 +22,7 @@ public class Game {
 	private final List<StateActionTuple> attackerHistory = new ArrayList<>();
 
 	public Game(Ball defender, Ball attacker) {
-		this.plane = new Vector(100, 100);
+		this.plane = new Vector(20, 20);
 		this.defender = defender;
 		this.attacker = attacker;
 	}
@@ -40,9 +40,9 @@ public class Game {
 	}
 
 	public Game() {
-		this.plane = new Vector(100, 100);
-		this.defender = new Ball(0, 25);
-		this.attacker = new Ball(0, -25);
+		this.plane = new Vector(20, 20);
+		this.defender = new Ball(0, this.plane.getY() / 4);
+		this.attacker = new Ball(0, -this.plane.getY() / 4);
 	}
 
 	public Ball getDefender() {
@@ -84,34 +84,24 @@ public class Game {
 		return attacker.getPosition().getY() > plane.getY() / 2 || isDefenderOutOfBounds();
 	}
 
+	public boolean isGameOver() {
+		return isVictoryForAttacker() || isVictoryForDefender();
+	}
+
+
 	public void moveBall(Ball ball, Action direction) {
 		logger.info(direction);
 		Vector force;
 		switch (direction) {
-			case UP -> {
-				force = new Vector(0, 2);
-				break;
-			}
-			case DOWN -> {
-				force = new Vector(0, -2);
-				break;
-			}
-			case RIGHT -> {
-				force = new Vector(2, 0);
-				break;
-			}
-			case LEFT -> {
-				force = new Vector(-2, 0);
-				break;
-			}
-			case null, default -> {
-				force = new Vector();
-				break;
-			}
+			case UP -> force = new Vector(0, 2);
+			case DOWN -> force = new Vector(0, -2);
+			case RIGHT -> force = new Vector(2, 0);
+			case LEFT -> force = new Vector(-2, 0);
+			case null, default -> force = new Vector();
 		}
 		ball.move(force);
 	}
-
+	
 	public State getAttackerState() {
 		return new State(Type.ATTACKER, attacker.getPosition(), defender.getPosition(), attacker.getSpeed(), defender.getSpeed());
 	}
