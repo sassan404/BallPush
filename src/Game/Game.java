@@ -7,19 +7,16 @@ import Movement.Vector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Game {
 
 	private static final Logger logger = LogManager.getLogger(Game.class);
-
-
+	private static final double REWARD_VICTORY = 1;
+	private static final double REWARD_PARTIAL_VICTORY = 0;
+	private static final double REWARD_LOSS = -1;
+	private static final double REWARD_DRAW = 0;
 	private final Ball defender;
 	private final Ball attacker;
 	private final Vector plane;
-	private final List<StateActionTuple> defenderHistory = new ArrayList<>();
-	private final List<StateActionTuple> attackerHistory = new ArrayList<>();
 
 	public Game(Ball defender, Ball attacker) {
 		this.plane = new Vector(20, 20);
@@ -52,14 +49,6 @@ public class Game {
 
 	public Ball getAttacker() {
 		return attacker;
-	}
-
-	public List<StateActionTuple> getDefenderHistory() {
-		return defenderHistory;
-	}
-
-	public List<StateActionTuple> getAttackerHistory() {
-		return attackerHistory;
 	}
 
 	// Defender is out of bound in all directions
@@ -129,16 +118,12 @@ public class Game {
 
 	public void moveAttacker(Action direction) {
 		logger.info("Attacker moving.");
-		State currentState = getAttackerState();
-		attackerHistory.add(new StateActionTuple(currentState, direction));
 		moveBall(attacker, direction);
 		logger.info("Attacker new position: {}", attacker.getPosition().toBeautfiulString());
 	}
 
 	public void moveDefender(Action direction) {
 		logger.info("Defender moving.");
-		State currentState = getDefenderState();
-		defenderHistory.add(new StateActionTuple(currentState, direction));
 		moveBall(defender, direction);
 		logger.info("Defender new position: {}", defender.getPosition().toBeautfiulString());
 	}
@@ -147,4 +132,27 @@ public class Game {
 	private void logVictory(String player) {
 		logger.info("Victory for {}", player);
 	}
+
+
+	public double getRewardForAttacker() {
+		return getReward(isVictoryForAttacker(), isVictoryForDefender());
+	}
+
+	public double getRewardForDefender() {
+		return getReward(isVictoryForDefender(), isVictoryForAttacker());
+	}
+
+	public double getReward(boolean victory, boolean loss) {
+		if (victory) {
+			if (isOutOfBounds()) {
+				return REWARD_PARTIAL_VICTORY;
+			}
+			return REWARD_VICTORY;
+		}
+		if (loss) {
+			return REWARD_LOSS;
+		}
+		return REWARD_DRAW;
+	}
+
 }
