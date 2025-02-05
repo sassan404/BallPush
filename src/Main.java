@@ -15,7 +15,10 @@ public class Main {
 
 		QLearning gameAI = new QLearning(true);
 
-		for (int i = 0; i < 1; i++) {
+		double numberOfGames = 200000;
+		double victoryCount = 0;
+		double outofBoundCount = 0;
+		for (int i = 0; i < numberOfGames; i++) {
 			logger.info("Start game: {}", i);
 			Game game = new Game();
 
@@ -45,7 +48,16 @@ public class Main {
 				oldAttackerState = new State(game.getAttackerState());
 				oldDefenderState = new State(game.getDefenderState());
 			}
+
+			if (game.isOutOfBounds()) {
+				outofBoundCount++;
+			} else {
+				victoryCount++;
+			}
+
 		}
+		logger.info("Victory percentage: {}", victoryCount / numberOfGames * 100);
+		logger.info("out of bound percentage: {}", outofBoundCount / numberOfGames * 100);
 
 		try {
 			gameAI.writeMatrix();

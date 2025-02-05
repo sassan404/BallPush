@@ -25,6 +25,6 @@ public class Position extends Vector {
 
 
 	public void updateY(double accY, double speedY) {
-		this.setX(0.5 * accY + speedY + this.getX());
+		this.setY(0.5 * accY + speedY + this.getY());
 	}
 }

@@ -106,8 +106,9 @@ public class QLearning {
 
 	public void readMatrix() throws IOException {
 		try (BufferedReader br = new BufferedReader(new FileReader(CSV_FILE_NAME))) {
-			List<String> lines = br.lines().toList();
-			lines.stream().skip(1).forEach(line -> {
+			br.readLine(); // Skip the header
+			String line = br.readLine();
+			while (line != null) {
 				String[] lineArray = line.split(",");
 				State state = new State(Arrays.copyOfRange(lineArray, 0, 9));
 				HashMap<Action, Double> actionMap = new HashMap<>();
@@ -117,7 +118,8 @@ public class QLearning {
 				actionMap.put(Action.RIGHT, Double.valueOf(lineArray[11]));
 				actionMap.put(Action.LEFT, Double.valueOf(lineArray[12]));
 				matrix.put(state, actionMap);
-			});
+				line = br.readLine();
+			}
 		}
 	}
 
